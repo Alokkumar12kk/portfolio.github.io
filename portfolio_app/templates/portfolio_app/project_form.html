@@ -1,0 +1,78 @@
+{% extends 'portfolio_app/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">
+                        {% if object %}
+                        <i class="fas fa-edit me-2"></i>Update Project
+                        {% else %}
+                        <i class="fas fa-plus me-2"></i>Create New Project
+                        {% endif %}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'project_list' %}{% endif %}" 
+                               class="btn btn-outline-secondary me-md-2">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                {% if object %}
+                                <i class="fas fa-save me-1"></i> Update
+                                {% else %}
+                                <i class="fas fa-plus me-1"></i> Create
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Preview image before upload
+    const imageUpload = document.getElementById('id_image');
+    if (imageUpload) {
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                const previewContainer = document.getElementById('image-preview-container');
+                
+                if (!previewContainer) {
+                    const container = document.createElement('div');
+                    container.id = 'image-preview-container';
+                    container.className = 'mt-3 text-center';
+                    imageUpload.parentNode.insertBefore(container, imageUpload.nextSibling);
+                }
+                
+                const previewContainer = document.getElementById('image-preview-container');
+                previewContainer.innerHTML = `
+                    <h6 class="mb-2">Image Preview</h6>
+                    <img id="image-preview" class="img-fluid rounded border" style="max-height: 200px;">
+                `;
+                
+                const preview = document.getElementById('image-preview');
+                reader.onload = function(event) {
+                    preview.src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

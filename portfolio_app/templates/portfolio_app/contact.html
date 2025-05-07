@@ -1,0 +1,135 @@
+{% extends 'portfolio_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="contact-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0"><i class="fas fa-envelope me-2"></i> Contact Me</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <form method="POST" id="contact-form">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Your Name</label>
+                                        <input type="text" class="form-control" id="name" name="name" 
+                                               value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                               value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="subject" class="form-label">Subject</label>
+                                        <input type="text" class="form-control" id="subject" name="subject" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="message" class="form-label">Message</label>
+                                        <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fas fa-paper-plane me-2"></i> Send Message
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div class="col-md-5 mt-4 mt-md-0">
+                                <div class="contact-info p-4 h-100" style="background-color: #f8f9fa; border-radius: 8px;">
+                                    <h4 class="mb-4"><i class="fas fa-info-circle me-2 text-primary"></i> Contact Details</h4>
+                                    
+                                    <div class="mb-4">
+                                        <h5><i class="fas fa-map-marker-alt me-2 text-primary"></i> Location</h5>
+                                        {% if request.user.is_authenticated and request.user.profile.location %}
+                                            <p>{{ request.user.profile.location }}</p>
+                                        {% else %}
+                                            <p>City, Country</p>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <h5><i class="fas fa-envelope me-2 text-primary"></i> Email</h5>
+                                        {% if request.user.is_authenticated and request.user.email %}
+                                            <p>{{ request.user.email }}</p>
+                                        {% else %}
+                                            <p>your.email@example.com</p>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="social-links mt-4">
+                                        <h5 class="mb-3"><i class="fas fa-share-alt me-2 text-primary"></i> Connect With Me</h5>
+                                        <div class="d-flex gap-3">
+                                            <a href="#" class="text-primary" title="LinkedIn">
+                                                <i class="fab fa-linkedin fa-2x"></i>
+                                            </a>
+                                            <a href="#" class="text-primary" title="GitHub">
+                                                <i class="fab fa-github fa-2x"></i>
+                                            </a>
+                                            <a href="#" class="text-primary" title="Twitter">
+                                                <i class="fab fa-twitter fa-2x"></i>
+                                            </a>
+                                            <a href="#" class="text-primary" title="Instagram">
+                                                <i class="fab fa-instagram fa-2x"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-section {
+        background-color: #f8f9fa;
+    }
+    
+    .contact-info h5 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .contact-info p {
+        margin-bottom: 1.5rem;
+        color: #495057;
+    }
+    
+    /* Social links hover effect */
+    .social-links a {
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+    
+    .social-links a:hover {
+        transform: translateY(-3px);
+        color: #0d6efd !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
+        });
+    }
+});
+</script>
+{% endblock %}
